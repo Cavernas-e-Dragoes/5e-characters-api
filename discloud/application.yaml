@@ -1,0 +1,41 @@
+spring:
+  data:
+    mongodb:
+      database: MONGODB_DATABASE_PLACEHOLDER
+      uri: MONGODB_URI_PLACEHOLDER
+  rabbitmq:
+    addresses: MQ_ADDRESSES_PLACEHOLDER
+  banner:
+    location: classpath:banner.txt
+
+server:
+  port: 8080
+  
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.web.FilterChainProxy: DEBUG
+    com.github.bucket4j: DEBUG
+    com.ced: DEBUG
+
+cors:
+  allowed-origins:
+    - https://characters.discloud.app
+    - http://localhost:4200
+    - https://cavernas-e-dragoes.web.app
+
+security:
+  token: TOKEN_PASSWORD_PLACEHOLDER
+  expiration: TOKEN_EXPIRATION_PLACEHOLDER
+
+amqp:
+  exchange-name: EXCHANGE_NAME_PLACEHOLDER
+  queue-name: QUEUE_NAME_PLACEHOLDER
+  routing-key: ROUTING_KEY_PLACEHOLDER
+
+application:
+  base-url: BASE_URL_PLACEHOLDER
+  verification:
+    token:
+      expiry-minutes: VERIFICATION_TOKEN_EXPIRY_PLACEHOLDER
+    resend-hours: VERIFICATION_RESEND_HOURS_PLACEHOLDER
