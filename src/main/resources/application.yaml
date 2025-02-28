@@ -32,3 +32,10 @@ amqp:
   exchange-name: ${EXCHANGE_NAME:xD}
   queue-name: ${QUEUE_NAME:xD}
   routing-key: ${ROUTING_KEY:xD}
+
+application:
+  base-url: ${BASE_URL:http://localhost:8080}
+  verification:
+    token:
+      expiry-minutes: ${VERIFICATION_TOKEN_EXPIRY:1440}
+    resend-hours: ${VERIFICATION_RESEND_HOURS:24}

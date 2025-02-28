@@ -3,6 +3,7 @@ package com.ced.security;
 import com.ced.data.DetailsUserDate;
 import com.ced.model.User;
 import com.ced.repository.UserRepository;
+import com.ced.service.EmailVerificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,12 +30,15 @@ public class JWTAuthFilter extends UsernamePasswordAuthenticationFilter {
     private final JWTHelper jwtHelper;
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
+    private final EmailVerificationService emailVerificationService;
 
-    public JWTAuthFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JWTHelper jwtHelper) {
+    public JWTAuthFilter(AuthenticationManager authenticationManager, UserRepository userRepository, 
+                         JWTHelper jwtHelper, EmailVerificationService emailVerificationService) {
         super(authenticationManager);
         this.userRepository = userRepository;
         this.jwtHelper = jwtHelper;
         this.authenticationManager = authenticationManager;
+        this.emailVerificationService = emailVerificationService;
     }
 
     @Override
@@ -43,7 +47,6 @@ public class JWTAuthFilter extends UsernamePasswordAuthenticationFilter {
         try {
             User user = new ObjectMapper()
                     .readValue(request.getInputStream(), User.class);
-
 
             return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     user.getEmail(),
@@ -65,9 +68,22 @@ public class JWTAuthFilter extends UsernamePasswordAuthenticationFilter {
 
         Optional<User> authenticatedUser = userRepository.findByEmail(detailsUserDate.getUsername());
         if (authenticatedUser.isPresent()) {
+            User user = authenticatedUser.get();
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put(TOKEN_IDENTIFIER, token);
-            responseBody.put(USER_IDENTIFIER, authenticatedUser.get());
+            responseBody.put(USER_IDENTIFIER, user);
+            
+            responseBody.put("emailVerified", user.isEmailVerified());
+            
+            if (!user.isEmailVerified()) {
+                responseBody.put("verificationMessage", "Seu e-mail ainda não foi verificado. Por favor, verifique seu e-mail para ativar completamente sua conta.");
+                
+                if (emailVerificationService.shouldResendVerificationEmailOnLogin(user)) {
+                    emailVerificationService.sendVerificationEmail(user);
+                    responseBody.put("verificationEmailSent", true);
+                    responseBody.put("verificationMessage", "Seu e-mail ainda não foi verificado. Acabamos de enviar um novo link de verificação para seu e-mail.");
+                }
+            }
 
             response.setContentType(CONTENT_TYPE_JSON);
             response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));

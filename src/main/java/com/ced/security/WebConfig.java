@@ -3,6 +3,7 @@ package com.ced.security;
 import com.ced.properties.CorsConfigProperties;
 import com.ced.properties.SecurityProperties;
 import com.ced.repository.UserRepository;
+import com.ced.service.EmailVerificationService;
 import com.ced.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +38,9 @@ public class WebConfig {
 
     @Autowired
     private JWTHelper jwtHelper;
+    
+    @Autowired
+    private EmailVerificationService emailVerificationService;
 
     private final AuthenticationConfiguration configuration;
 
@@ -61,7 +65,8 @@ public class WebConfig {
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
                 )
-                .addFilter(new JWTAuthFilter(configuration.getAuthenticationManager(), userRepository, jwtHelper))
+                .addFilter(new JWTAuthFilter(configuration.getAuthenticationManager(), 
+                        userRepository, jwtHelper, emailVerificationService))
                 .addFilter(new JWTValidFilter(configuration.getAuthenticationManager(), securityProperties))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();

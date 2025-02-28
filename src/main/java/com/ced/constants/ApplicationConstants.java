@@ -27,5 +27,6 @@ public class ApplicationConstants {
     public static final String BASE_API_PERSONAGENS = "/api/personagens";
     public static final String BASE_API_USER = "/api/user";
 
+    public static final String TEXT_HTML = "text/html";
 
 }
