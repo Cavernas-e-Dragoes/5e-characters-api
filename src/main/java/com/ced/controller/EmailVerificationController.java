@@ -43,13 +43,17 @@ public class EmailVerificationController {
     public ResponseEntity<Map<String, Object>> resendVerification(@RequestParam String email) {
         Map<String, Object> response = new HashMap<>();
 
-        boolean sent = emailVerificationService.resendVerificationEmail(email);
+        int result = emailVerificationService.resendVerificationEmailWithStatus(email);
 
-        if (sent) {
+        if (result == 1) {
             response.put("success", true);
             response.put("message", "E-mail de verificação reenviado com sucesso!");
             return ResponseEntity.ok(response);
-        } else {
+        } else if (result == 0) {
+            response.put("success", false);
+            response.put("message", "Por favor, aguarde antes de solicitar um novo e-mail de verificação.");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(response);
+        } else { 
             response.put("success", false);
             response.put("message", "Não foi possível reenviar o e-mail de verificação. Verifique se o e-mail está correto ou se já foi verificado.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
