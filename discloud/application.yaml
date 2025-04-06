@@ -23,6 +23,8 @@ cors:
     - https://characters.discloud.app
     - http://localhost:4200
     - https://cavernas-e-dragoes.web.app
+    - https://www.cavernasedragoes.com.br
+    - https://cavernasedragoes.com.br
 
 security:
   token: TOKEN_PASSWORD_PLACEHOLDER
